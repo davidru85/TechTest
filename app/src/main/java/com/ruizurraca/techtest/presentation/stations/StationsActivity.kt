@@ -2,7 +2,6 @@ package com.ruizurraca.techtest.presentation.stations
 
 import android.location.Geocoder
 import android.os.Bundle
-import androidx.lifecycle.Observer
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -13,9 +12,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
+const val MIN_ZOOM = 13
+
 class StationsActivity : BaseActivity() {
 
-    override val TAG = StationsActivity::class.java.name
     private var upperRightLatLon = LatLng(0.0, 0.0)
     private var lowerLeftLatLon = LatLng(0.0, 0.0)
     lateinit var geocoder: Geocoder
@@ -26,6 +26,7 @@ class StationsActivity : BaseActivity() {
 
     private lateinit var googleMap: GoogleMap
 
+    @ExperimentalCoroutinesApi
     private val onMapReadyCallback =
         OnMapReadyCallback { googleMap ->
             this@StationsActivity.googleMap = googleMap
@@ -33,46 +34,53 @@ class StationsActivity : BaseActivity() {
         }
 
     @ExperimentalCoroutinesApi
-    private fun manageNewMapPosition() {
-        val citiesList = geocoder.getFromLocation(
-            googleMap.cameraPosition.target.latitude,
-            googleMap.cameraPosition.target.longitude,
-            1
-        )
-        googleMap.projection.visibleRegion.latLngBounds.apply {
-            upperRightLatLon = northeast
-            lowerLeftLatLon = southwest
-        }
-        if (citiesList.isNotEmpty()) {
-            citiesList.first().locality?.apply {
-                stationsViewModel.getStations(
-                    MarkCoordinates(
-                        lowerLeftLatLon = lowerLeftLatLon,
-                        upperRightLatLon = upperRightLatLon,
-                        cityName = this.toLowerCase(Locale.getDefault())
-                    )
-                )
-            }
-        }
-
-        with(stationsViewModel) {
-            stationsData.observe(this@StationsActivity, Observer {
-                logd("data")
-            })
-            messageData.observe(this@StationsActivity, Observer {
-                logd("message")
-            })
-            showProgressbar.observe(this@StationsActivity, Observer { isVisible ->
-                logd("progressBar")
-            })
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(onMapReadyCallback)
         geocoder = Geocoder(this)
+
+        observeLiveData()
+    }
+
+    private fun observeLiveData() {
+        with(stationsViewModel) {
+            stationsData.observe(this@StationsActivity, {
+                logd("data")
+            })
+            messageData.observe(this@StationsActivity, {
+                logd("message")
+            })
+            showProgressbar.observe(this@StationsActivity, { isVisible ->
+                logd("progressBar")
+            })
+        }
+    }
+
+    @ExperimentalCoroutinesApi
+    private fun manageNewMapPosition() {
+        if (googleMap.cameraPosition.zoom > MIN_ZOOM) {
+            val citiesList = geocoder.getFromLocation(
+                googleMap.cameraPosition.target.latitude,
+                googleMap.cameraPosition.target.longitude,
+                1
+            )
+            googleMap.projection.visibleRegion.latLngBounds.apply {
+                upperRightLatLon = northeast
+                lowerLeftLatLon = southwest
+            }
+            if (citiesList.isNotEmpty()) {
+                citiesList.first().locality?.apply {
+                    stationsViewModel.getStations(
+                        MarkCoordinates(
+                            lowerLeftLatLon = lowerLeftLatLon,
+                            upperRightLatLon = upperRightLatLon,
+                            cityName = this.toLowerCase(Locale.getDefault())
+                        )
+                    )
+                }
+            }
+        }
     }
 }
