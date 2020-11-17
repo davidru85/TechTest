@@ -39,8 +39,10 @@ class StationsActivity : BaseActivity() {
             googleMap.cameraPosition.target.longitude,
             1
         )
-        upperRightLatLon = googleMap.projection.visibleRegion.latLngBounds.northeast
-        lowerLeftLatLon = googleMap.projection.visibleRegion.latLngBounds.southwest
+        googleMap.projection.visibleRegion.latLngBounds.apply {
+            upperRightLatLon = northeast
+            lowerLeftLatLon = southwest
+        }
         if (citiesList.isNotEmpty()) {
             citiesList.first().locality?.apply {
                 stationsViewModel.getStations(
