@@ -7,6 +7,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.ruizurraca.techtest.R
+import com.ruizurraca.techtest.domain.model.Station
 import com.ruizurraca.techtest.presentation.base.BaseActivity
 import com.ruizurraca.techtest.utils.extensions.gone
 import com.ruizurraca.techtest.utils.extensions.visible
@@ -16,6 +17,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
 const val MIN_ZOOM = 13
+const val MAX_PINS_TO_SHOW = 200
 
 class StationsActivity : BaseActivity() {
 
@@ -50,7 +52,7 @@ class StationsActivity : BaseActivity() {
     private fun observeLiveData() {
         with(stationsViewModel) {
             stationsData.observe(this@StationsActivity, {
-                logd("data")
+                populateMap(it)
             })
             messageData.observe(this@StationsActivity, {
                 logd("message")
@@ -64,6 +66,12 @@ class StationsActivity : BaseActivity() {
                     }
                 }
             })
+        }
+    }
+
+    private fun populateMap(stationsList: List<Station>) {
+        if (stationsList.size < MAX_PINS_TO_SHOW) {
+            logd(stationsList.toString())
         }
     }
 
