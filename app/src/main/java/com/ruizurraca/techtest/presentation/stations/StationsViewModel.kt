@@ -39,4 +39,4 @@ class StationsViewModel constructor(private val getStationsUseCase: GetStationsU
     }
 }
 
-data class MarkCoordinates(val lowerLeftLatLon: LatLng, val upperRightLatLon: LatLng)
+data class MarkCoordinates(val lowerLeftLatLon: LatLng, val upperRightLatLon: LatLng, val cityName: String)

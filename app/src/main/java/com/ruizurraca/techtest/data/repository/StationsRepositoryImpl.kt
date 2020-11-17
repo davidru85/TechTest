@@ -6,6 +6,9 @@ import com.ruizurraca.techtest.presentation.stations.MarkCoordinates
 
 class StationsRepositoryImpl(private val apiService: ApiService) : StationsRepository {
     override suspend fun getStations(markCoordinates: MarkCoordinates?) =
-        apiService.getStations(lowerLeftLatLon = "${markCoordinates?.lowerLeftLatLon?.latitude},${markCoordinates?.lowerLeftLatLon?.longitude}",
-            upperRightLatLon = "${markCoordinates?.upperRightLatLon?.latitude},${markCoordinates?.upperRightLatLon?.longitude}")
+        apiService.getStations(
+            cityName = markCoordinates?.cityName,
+            lowerLeftLatLon = "${markCoordinates?.lowerLeftLatLon?.latitude},${markCoordinates?.lowerLeftLatLon?.longitude}",
+            upperRightLatLon = "${markCoordinates?.upperRightLatLon?.latitude},${markCoordinates?.upperRightLatLon?.longitude}"
+        )
 }
