@@ -6,6 +6,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.ruizurraca.techtest.R
 import com.ruizurraca.techtest.domain.model.Station
 import com.ruizurraca.techtest.presentation.base.BaseActivity
@@ -17,7 +18,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
 const val MIN_ZOOM = 13
-const val MAX_PINS_TO_SHOW = 200
+const val MAX_PINS_TO_SHOW = 300
 
 class StationsActivity : BaseActivity() {
 
@@ -36,6 +37,10 @@ class StationsActivity : BaseActivity() {
         OnMapReadyCallback { googleMap ->
             this@StationsActivity.googleMap = googleMap
             googleMap.setOnCameraIdleListener { manageNewMapPosition() }
+            googleMap.setOnMarkerClickListener {
+                it.showInfoWindow(); // show info window
+                true
+            }
         }
 
     @ExperimentalCoroutinesApi
@@ -71,12 +76,21 @@ class StationsActivity : BaseActivity() {
 
     private fun populateMap(stationsList: List<Station>) {
         if (stationsList.size < MAX_PINS_TO_SHOW) {
+            val options = MarkerOptions()
             logd(stationsList.toString())
+            stationsList.forEach {
+                if (it.isValid()) {
+                    options.position(LatLng(it.coordinateY ?: 0.0, it.coordinateX ?: 0.0))
+                    options.title(it.name)
+                    googleMap.addMarker(options)
+                }
+            }
         }
     }
 
     @ExperimentalCoroutinesApi
     private fun manageNewMapPosition() {
+        googleMap.clear()
         if (googleMap.cameraPosition.zoom > MIN_ZOOM) {
             val citiesList = geocoder.getFromLocation(
                 googleMap.cameraPosition.target.latitude,

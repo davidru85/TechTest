@@ -26,6 +26,8 @@ data class Station(
     val companyZoneId: Int? = null,
     @SerializedName("availableResources")
     val availableResources: Int? = null
-)
-
+) {
+    fun isValid() =
+        (coordinateX != null && coordinateY != null && name != null && id != null && companyZoneId != null)
+}
 
