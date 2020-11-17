@@ -5,6 +5,8 @@ import android.os.Bundle
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.ruizurraca.techtest.R
@@ -78,12 +80,34 @@ class StationsActivity : BaseActivity() {
         if (stationsList.size < MAX_PINS_TO_SHOW) {
             val options = MarkerOptions()
             logd(stationsList.toString())
-            stationsList.forEach {
-                if (it.isValid()) {
-                    options.position(LatLng(it.coordinateY ?: 0.0, it.coordinateX ?: 0.0))
-                    options.title(it.name)
+            stationsList.forEach { station ->
+                if (station.isValid()) {
+                    options.position(LatLng(station.coordinateY ?: 0.0, station.coordinateX ?: 0.0))
+                    options.title(station.name)
+                    options.icon(getMarkerIcon(station.companyZoneId))
                     googleMap.addMarker(options)
                 }
+            }
+            logd("asdasd")
+        }
+    }
+
+    private fun getMarkerIcon(companyZoneId: Int?): BitmapDescriptor? {
+        return when (ZoneIDColor.fromValue(companyZoneId)) {
+            ZoneIDColor.RED -> {
+                BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)
+            }
+            ZoneIDColor.GREEN -> {
+                BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
+            }
+            ZoneIDColor.BLUE -> {
+                BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
+            }
+            ZoneIDColor.YELLOW -> {
+                BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)
+            }
+            else -> {
+                BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE)
             }
         }
     }
@@ -113,5 +137,18 @@ class StationsActivity : BaseActivity() {
                 }
             }
         }
+    }
+}
+
+enum class ZoneIDColor(val id: Int) {
+    RED(10),
+    GREEN(11),
+    BLUE(416),
+    YELLOW(420);
+
+    companion object {
+        @JvmStatic
+        fun fromValue(value: Int?): ZoneIDColor? =
+            values().find { currentValue -> currentValue.id == value }
     }
 }
