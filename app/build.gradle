@@ -68,6 +68,8 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
 
     //Test dependencies
+    implementation 'com.google.android.gms:play-services-maps:17.0.0'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
     testImplementation "junit:junit:$junit_version"
     testImplementation "org.koin:koin-test:$koin_test_version"
     androidTestImplementation "androidx.test:runner:$runner_version"
