@@ -8,6 +8,9 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.ruizurraca.techtest.R
 import com.ruizurraca.techtest.presentation.base.BaseActivity
+import com.ruizurraca.techtest.utils.extensions.gone
+import com.ruizurraca.techtest.utils.extensions.visible
+import kotlinx.android.synthetic.main.activity_maps.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
@@ -53,7 +56,13 @@ class StationsActivity : BaseActivity() {
                 logd("message")
             })
             showProgressbar.observe(this@StationsActivity, { isVisible ->
-                logd("progressBar")
+                pb_loading.apply {
+                    if (isVisible) {
+                        visible()
+                    } else {
+                        gone()
+                    }
+                }
             })
         }
     }
