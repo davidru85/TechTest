@@ -2,6 +2,7 @@ package com.ruizurraca.techtest.presentation.stations
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.google.android.gms.maps.model.LatLng
 import com.ruizurraca.techtest.domain.model.ErrorModel
 import com.ruizurraca.techtest.domain.model.Station
 import com.ruizurraca.techtest.domain.usecase.GetStationsUseCase
@@ -17,9 +18,9 @@ class StationsViewModel constructor(private val getStationsUseCase: GetStationsU
     val messageData = MutableLiveData<String>()
 
     @ExperimentalCoroutinesApi
-    fun getStations() {
+    fun getStations(markCoordinates: MarkCoordinates) {
         showProgressbar.value = true
-        getStationsUseCase.invoke(null, object : UseCaseResponse<List<Station>> {
+        getStationsUseCase.invoke(markCoordinates, object : UseCaseResponse<List<Station>> {
             override fun onSuccess(result: List<Station>) {
                 Log.i(TAG, "result: $result")
                 stationsData.value = result
@@ -37,3 +38,5 @@ class StationsViewModel constructor(private val getStationsUseCase: GetStationsU
         private val TAG = StationsViewModel::class.java.name
     }
 }
+
+data class MarkCoordinates(val lowerLeftLatLon: LatLng, val upperRightLatLon: LatLng)

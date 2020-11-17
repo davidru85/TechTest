@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 abstract class BaseActivity : AppCompatActivity() {
 
     abstract fun layoutResID(): Int
+    abstract val TAG: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -14,6 +15,6 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     fun logd(text: String? = "") {
-        Log.d("TAG", text)
+        Log.d(TAG, text)
     }
 }
